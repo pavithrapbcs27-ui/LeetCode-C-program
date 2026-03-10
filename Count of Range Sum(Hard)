@@ -1,0 +1,48 @@
+#include <stdlib.h>
+
+long long* temp;
+
+int mergeAndCount(long long* sums, int left, int right, int lower, int upper) {
+    if (left >= right) return 0;
+
+    int mid = left + (right - left) / 2;
+    int count = mergeAndCount(sums, left, mid, lower, upper) + 
+                mergeAndCount(sums, mid + 1, right, lower, upper);
+
+    // Count pairs across the two sorted halves
+    int m = mid + 1, n = mid + 1;
+    for (int i = left; i <= mid; i++) {
+        while (m <= right && sums[m] - sums[i] < lower) m++;
+        while (n <= right && sums[n] - sums[i] <= upper) n++;
+        count += (n - m);
+    }
+
+    // Standard Merge Sort Step
+    int i = left, j = mid + 1, k = left;
+    while (i <= mid && j <= right) {
+        if (sums[i] < sums[j]) temp[k++] = sums[i++];
+        else temp[k++] = sums[j++];
+    }
+    while (i <= mid) temp[k++] = sums[i++];
+    while (j <= right) temp[k++] = sums[j++];
+
+    for (int x = left; x <= right; x++) sums[x] = temp[x];
+    
+    return count;
+}
+
+int countRangeSum(int* nums, int numsSize, int lower, int upper) {
+    long long* sums = (long long*)malloc((numsSize + 1) * sizeof(long long));
+    temp = (long long*)malloc((numsSize + 1) * sizeof(long long));
+    
+    sums[0] = 0;
+    for (int i = 0; i < numsSize; i++) {
+        sums[i + 1] = sums[i] + nums[i];
+    }
+
+    int result = mergeAndCount(sums, 0, numsSize, lower, upper);
+    
+    free(sums);
+    free(temp);
+    return result;
+}
