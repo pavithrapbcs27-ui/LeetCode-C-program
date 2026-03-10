@@ -1,0 +1,6 @@
+#include <stdbool.h>
+
+bool canWinNim(int n) {
+    // You win if n is not divisible by 4
+    return n % 4 != 0;
+}
