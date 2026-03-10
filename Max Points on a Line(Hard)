@@ -1,0 +1,60 @@
+#include <math.h>
+
+int gcd(int a, int b) {
+    while (b) {
+        a %= b;
+        int tmp = a;
+        a = b;
+        b = tmp;
+    }
+    return a;
+}
+
+int maxPoints(int** points, int pointsSize, int* pointsColSize) {
+    if (pointsSize <= 2) return pointsSize;
+    int globalMax = 0;
+
+    for (int i = 0; i < pointsSize; i++) {
+        // Temporary storage for slopes from point i
+        // Using a simple struct to represent the reduced fraction slope
+        struct Slope { int dx, dy, count; } slopes[300];
+        int slopeCount = 0;
+        int localMax = 0;
+
+        for (int j = i + 1; j < pointsSize; j++) {
+            int dx = points[j][0] - points[i][0];
+            int dy = points[j][1] - points[i][1];
+            
+            int common = gcd(dx, dy);
+            dx /= common;
+            dy /= common;
+
+            // Normalize sign: ensure dx is always positive, or if dx=0, dy is positive
+            if (dx < 0 || (dx == 0 && dy < 0)) {
+                dx = -dx;
+                dy = -dy;
+            }
+
+            // Search if this slope exists in our local list
+            bool found = false;
+            for (int k = 0; k < slopeCount; k++) {
+                if (slopes[k].dx == dx && slopes[k].dy == dy) {
+                    slopes[k].count++;
+                    if (slopes[k].count > localMax) localMax = slopes[k].count;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                slopes[slopeCount].dx = dx;
+                slopes[slopeCount].dy = dy;
+                slopes[slopeCount].count = 1;
+                if (localMax < 1) localMax = 1;
+                slopeCount++;
+            }
+        }
+        if (localMax + 1 > globalMax) globalMax = localMax + 1;
+    }
+
+    return globalMax;
+}
