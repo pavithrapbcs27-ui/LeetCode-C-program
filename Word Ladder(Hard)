@@ -1,0 +1,69 @@
+#include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+// Simple Queue Structure
+typedef struct {
+    char** data;
+    int head;
+    int tail;
+} Queue;
+
+int ladderLength(char* beginWord, char* endWord, char** wordList, int wordListSize) {
+    int wordLen = strlen(beginWord);
+    bool foundEnd = false;
+    
+    // 1. Verify if endWord exists in wordList
+    for (int i = 0; i < wordListSize; i++) {
+        if (strcmp(wordList[i], endWord) == 0) {
+            foundEnd = true;
+            break;
+        }
+    }
+    if (!foundEnd) return 0;
+
+    // 2. BFS Setup
+    Queue q;
+    q.data = (char**)malloc((wordListSize + 1) * sizeof(char*));
+    q.head = 0;
+    q.tail = 0;
+    
+    // Track visited words using a boolean array
+    bool* visited = (bool*)calloc(wordListSize, sizeof(bool));
+    
+    q.data[q.tail++] = beginWord;
+    int level = 1;
+
+    while (q.head < q.tail) {
+        int size = q.tail - q.head;
+        for (int i = 0; i < size; i++) {
+            char* curr = q.data[q.head++];
+            
+            if (strcmp(curr, endWord) == 0) {
+                free(visited);
+                free(q.data);
+                return level;
+            }
+
+            // Try all possible 1-character transformations
+            for (int j = 0; j < wordListSize; j++) {
+                if (!visited[j]) {
+                    int diff = 0;
+                    for (int k = 0; k < wordLen; k++) {
+                        if (curr[k] != wordList[j][k]) diff++;
+                        if (diff > 1) break;
+                    }
+                    if (diff == 1) {
+                        visited[j] = true;
+                        q.data[q.tail++] = wordList[j];
+                    }
+                }
+            }
+        }
+        level++;
+    }
+
+    free(visited);
+    free(q.data);
+    return 0;
+}
