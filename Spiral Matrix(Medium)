@@ -1,0 +1,45 @@
+#include <stdlib.h>
+
+int* spiralOrder(int** matrix, int matrixSize, int* matrixColSize, int* returnSize) {
+    if (matrixSize == 0) {
+        *returnSize = 0;
+        return NULL;
+    }
+
+    int m = matrixSize;
+    int n = matrixColSize[0];
+    int totalElements = m * n;
+    int* result = (int*)malloc(sizeof(int) * totalElements);
+    *returnSize = 0;
+
+    int top = 0, bottom = m - 1;
+    int left = 0, right = n - 1;
+
+    while (*returnSize < totalElements) {
+        // 1. Traverse Right (along the top boundary)
+        for (int i = left; i <= right && *returnSize < totalElements; i++) {
+            result[(*returnSize)++] = matrix[top][i];
+        }
+        top++;
+
+        // 2. Traverse Down (along the right boundary)
+        for (int i = top; i <= bottom && *returnSize < totalElements; i++) {
+            result[(*returnSize)++] = matrix[i][right];
+        }
+        right--;
+
+        // 3. Traverse Left (along the bottom boundary)
+        for (int i = right; i >= left && *returnSize < totalElements; i--) {
+            result[(*returnSize)++] = matrix[bottom][i];
+        }
+        bottom--;
+
+        // 4. Traverse Up (along the left boundary)
+        for (int i = bottom; i >= top && *returnSize < totalElements; i--) {
+            result[(*returnSize)++] = matrix[i][left];
+        }
+        left++;
+    }
+
+    return result;
+}
