@@ -1,0 +1,27 @@
+#include <stdbool.h>
+
+/**
+ * Definition for a binary tree node.
+ */
+// struct TreeNode {
+//     int val;
+//     struct TreeNode *left;
+//     struct TreeNode *right;
+// };
+
+bool hasPathSum(struct TreeNode* root, int targetSum) {
+    // 1. Base case: If the node is NULL, no path exists
+    if (root == NULL) {
+        return false;
+    }
+
+    // 2. Check if we are at a leaf node
+    if (root->left == NULL && root->right == NULL) {
+        // A path exists if the remaining targetSum equals the leaf's value
+        return targetSum == root->val;
+    }
+
+    // 3. Recurse down left and right subtrees with the updated sum
+    int remainingSum = targetSum - root->val;
+    return hasPathSum(root->left, remainingSum) || hasPathSum(root->right, remainingSum);
+}
