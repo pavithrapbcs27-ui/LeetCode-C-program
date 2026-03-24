@@ -1,0 +1,27 @@
+#include <stdio.h>
+
+int firstMissingPositive(int* nums, int numsSize) {
+    for (int i = 0; i < numsSize; i++) {
+        // While the current number is in the valid range [1, n]
+        // AND it's not in its correct position (nums[i] - 1)
+        // AND the target position doesn't already have the correct number (prevents infinite loop with duplicates)
+        while (nums[i] > 0 && nums[i] <= numsSize && nums[nums[i] - 1] != nums[i]) {
+            // Swap nums[i] with nums[nums[i] - 1]
+            int targetIdx = nums[i] - 1;
+            int temp = nums[i];
+            nums[i] = nums[targetIdx];
+            nums[targetIdx] = temp;
+        }
+    }
+
+    // Scan for the first index that doesn't match its value
+    for (int i = 0; i < numsSize; i++) {
+        if (nums[i] != i + 1) {
+            return i + 1;
+        }
+    }
+
+    // If all positions are correct, the missing number is n + 1
+    return numsSize + 1;
+}
+
